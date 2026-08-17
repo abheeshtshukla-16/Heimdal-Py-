@@ -2,6 +2,7 @@ from fastapi import FastAPI, Request, Depends
 import httpx
 import json
 import asyncpg
+import redis.asyncio as redis
 from contextlib import asynccontextmanager
 from schemas import OpenAI
 from config import settings
@@ -24,9 +25,15 @@ async def lifespan(app : FastAPI):
         host=settings.postgres_host,
         port=settings.postgres_port,
     )
+
+    app.state.redis = redis.Redis(
+        host='localhost',
+        port=6379,
+    )
     yield
     await app.state.http_client.aclose()
     await app.state.pg_pool.close()
+    await app.state.redis.aclose()
 
 app = FastAPI(lifespan=lifespan)
 
