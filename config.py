@@ -7,6 +7,8 @@ class Settings(BaseSettings):
     postgres_port:int
     postgres_db:str
     openai_api_key: str
+    redis_host: str = "localhost"
+    redis_port: int = 6379
 
     model_config = SettingsConfigDict(env_file=".env")
 
